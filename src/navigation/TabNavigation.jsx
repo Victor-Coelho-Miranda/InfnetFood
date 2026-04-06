@@ -5,6 +5,7 @@ import Home from "../pages/Home/Home";
 import Carrinho from "../pages/Carrinho/Carrinho";
 import ProfileScreen from "../pages/Perfil/ProfileScreen";
 import OrdersScreen from "../pages/Pedidos/OrdersScreen";
+import MapaScreens from "../pages/Mapa/MapaScreens";
 
 
 const Tab = createBottomTabNavigator();
@@ -29,6 +30,9 @@ export function TabsRoutes() {
           }
           else if (route.name === "Pedidos") {
            iconName = focused ? "receipt" : "receipt-outline";
+          }
+          else if (route.name === "Mapa") {
+           iconName = focused ? "map" : "map-outline";
 }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -53,6 +57,7 @@ export function TabsRoutes() {
       <Tab.Screen name="Carrinho" component={Carrinho} />
       <Tab.Screen name="Pedidos" component={OrdersScreen} />
       <Tab.Screen name="Perfil" component={ProfileScreen} />
+      <Tab.Screen name="Mapa" component={MapaScreens} />
     </Tab.Navigator>
   );
 }
