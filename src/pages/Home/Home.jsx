@@ -1,25 +1,29 @@
 import { View, Text, FlatList, StyleSheet, Pressable } from "react-native";
-import { Categories } from "../../data/Categorias";
+import { Categories } from "../../data/Categorias.js";
 
-export default function Home() {
-  
-  function renderItem({ item }) {
-    return (
-      <Pressable style={styles.card}>
-        <Text style={styles.texto}>{item.nome}</Text>
-      </Pressable>
-    );
-  }
 
+
+export default function Home({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Categorias</Text>
+      <Text style={styles.title}>Categorias</Text>
 
       <FlatList
         data={Categories}
         keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <Pressable
+            style={styles.card}
+            onPress={() =>
+              navigation.navigate("Produtos", {
+                categoriaId: item.id,
+                nome: item.nome,
+              })
+            }
+          >
+            <Text style={styles.texto}>{item.nome}</Text>
+          </Pressable>
+        )}
       />
     </View>
   );
