@@ -25,7 +25,7 @@ export default function Login({ navigation }) {
 
     if (user) {
       setErro("");
-      navigation.navigate("Home");
+      navigation.replace("Tabs");
     } else {
       setErro("E-mail ou senha inválidos");
     }

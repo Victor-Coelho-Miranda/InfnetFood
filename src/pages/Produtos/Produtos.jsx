@@ -2,7 +2,7 @@ import { View, Text, FlatList, Pressable } from "react-native";
 import { products } from "../../data/Produtos";
 
 export default function Produtos({ route, navigation }) {
-  const { categoriaId, nome } = route.params;
+  const { categoriaId, nome } = route?.params || {};
 
   const filtered = products.filter(
     (item) => item.categoriaId === categoriaId
