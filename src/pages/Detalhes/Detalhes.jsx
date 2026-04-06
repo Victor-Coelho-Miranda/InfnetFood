@@ -1,95 +1,124 @@
-import { View, Text, Pressable } from "react-native";
-import { useState } from "react";
+import { View, Text, Pressable, StyleSheet } from "react-native";
+import { useState, useContext } from "react";
+import { CartContext } from "../../context/CartContext";
 
 export default function Detalhes({ route }) {
-  const { product } = route.params;
+  const product = route?.params?.product;
 
+  if (!product) {
+    return (
+      <View style={styles.container}>
+        <Text>Produto não encontrado</Text>
+      </View>
+    );
+  }
+
+  const { addToCart } = useContext(CartContext);
   const [quantidade, setQuantidade] = useState(1);
 
-  function aumentar() {
-    setQuantidade(quantidade + 1);
-  }
+  const aumentar = () => setQuantidade((q) => q + 1);
+  const diminuir = () => setQuantidade((q) => (q > 1 ? q - 1 : 1));
 
-  function diminuir() {
-    if (quantidade > 1) {
-      setQuantidade(quantidade - 1);
-    }
-  }
-
-  function adicionarCarrinho() {
-    alert(`Adicionado ${quantidade}x ${product.nome} ao carrinho 🛒`);
-  }
+  const handleAddToCart = () => {
+    addToCart(product, quantidade);
+    alert(`${quantidade} ${product.nome} adicionado(s) ao carrinho 🛒`);
+  };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#f5f5f5", padding: 20 }}>
+    <View style={styles.container}>
+      <Text style={styles.nome}>{product.nome}</Text>
 
-      <Text style={{ fontSize: 26, fontWeight: "bold" }}>
-        {product.nome}
-      </Text>
+      <Text style={styles.descricao}>{product.descricao}</Text>
 
-      <Text style={{ marginVertical: 10, color: "#555" }}>
-        {product.descricao}
-      </Text>
+      <Text style={styles.preco}>R$ {product.preco}</Text>
 
-      <Text style={{ fontSize: 22, fontWeight: "bold", color: "#2ecc71" }}>
-        R$ {product.preco}
-      </Text>
-
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          marginTop: 30,
-        }}
-      >
+      <View style={styles.quantidadeContainer}>
         <Pressable
           onPress={diminuir}
-          style={{
-            backgroundColor: quantidade === 1 ? "#ccc" : "#e74c3c",
-            padding: 15,
-            borderRadius: 10,
-          }}
+          style={[
+            styles.botaoQuantidade,
+            { backgroundColor: quantidade === 1 ? "#ccc" : "#e74c3c" },
+          ]}
         >
-          <Text style={{ color: "#fff", fontSize: 18 }}>-</Text>
+          <Text style={styles.textoBotao}>-</Text>
         </Pressable>
 
-        <Text style={{ marginHorizontal: 20, fontSize: 20 }}>
-          {quantidade}
-        </Text>
+        <Text style={styles.quantidade}>{quantidade}</Text>
 
         <Pressable
           onPress={aumentar}
-          style={{
-            backgroundColor: "#2ecc71",
-            padding: 15,
-            borderRadius: 10,
-          }}
+          style={[styles.botaoQuantidade, { backgroundColor: "#2ecc71" }]}
         >
-          <Text style={{ color: "#fff", fontSize: 18 }}>+</Text>
+          <Text style={styles.textoBotao}>+</Text>
         </Pressable>
       </View>
 
-      <Text style={{ marginTop: 20, fontSize: 18 }}>
+      <Text style={styles.total}>
         Total: <Text style={{ fontWeight: "bold" }}>
           R$ {product.preco * quantidade}
         </Text>
       </Text>
 
-      <Pressable
-        onPress={adicionarCarrinho}
-        style={{
-          marginTop: 40,
-          backgroundColor: "#3498db",
-          padding: 18,
-          borderRadius: 12,
-          alignItems: "center",
-        }}
-      >
-        <Text style={{ color: "#fff", fontSize: 18, fontWeight: "bold" }}>
+      <Pressable style={styles.botaoCarrinho} onPress={handleAddToCart}>
+        <Text style={styles.textoCarrinho}>
           🛒 Adicionar ao carrinho
         </Text>
       </Pressable>
-
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    padding: 20,
+  },
+  nome: {
+    fontSize: 26,
+    fontWeight: "bold",
+  },
+  descricao: {
+    marginVertical: 10,
+    color: "#555",
+  },
+  preco: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#2ecc71",
+  },
+  quantidadeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 30,
+  },
+  botaoQuantidade: {
+    padding: 15,
+    borderRadius: 10,
+  },
+  textoBotao: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  quantidade: {
+    marginHorizontal: 20,
+    fontSize: 20,
+  },
+  total: {
+    marginTop: 20,
+    fontSize: 18,
+  },
+  botaoCarrinho: {
+    marginTop: 40,
+    backgroundColor: "#3498db",
+    padding: 18,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  textoCarrinho: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+});

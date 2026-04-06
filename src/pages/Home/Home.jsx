@@ -1,11 +1,31 @@
 import { View, Text, FlatList, StyleSheet, Pressable } from "react-native";
 import { Categories } from "../../data/Categorias.js";
+import { useContext } from "react";
+import { CartContext } from "../../context/CartContext";
 
 
 
 export default function Home({ navigation }) {
+     const { cart } = useContext(CartContext);
+
+  const totalItens = cart.reduce(
+    (sum, item) => sum + item.quantidade,
+    0
+  );
   return (
     <View style={styles.container}>
+         <Pressable
+        onPress={() => navigation.navigate("Carrinho")}
+        style={{
+          alignSelf: "flex-end",
+          backgroundColor: "#3498db",
+          padding: 10,
+          borderRadius: 10,
+          marginBottom: 10,
+        }}
+      >
+        <Text style={{ color: "#fff" }}>🛒 ({totalItens})</Text>
+      </Pressable>
       <Text style={styles.title}>Categorias</Text>
 
       <FlatList
