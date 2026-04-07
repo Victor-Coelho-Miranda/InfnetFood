@@ -3,34 +3,31 @@ import { View, Text,TextInput, Pressable, StyleSheet} from "react-native";
 
 import { users } from  "../../data/Usuario";
 
-export default function Login({ navigation }) {
+export default function Login({  setUsuarioLogado  }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
 
-  function handleLogin() {
-    if (!email || !senha) {
-      setErro("Preencha todos os campos");
-      return;
-    }
-
-    if (!email.includes("@")) {
-      setErro("E-mail inválido");
-      return;
-    }
-
-    const user = users.find(
-      (u) => u.email === email && u.senha === senha
-    );
-
-    if (user) {
-      setErro("");
-      navigation.replace("Tabs");
-    } else {
-      setErro("E-mail ou senha inválidos");
-    }
+ function handleLogin() {
+  setErro("");
+  if (!email.trim() || !senha.trim()) {
+    setErro("Preencha todos os campos");
+    return;
   }
+  if (!email.includes("@")) {
+    setErro("E-mail inválido");
+    return;
+  }
+  const user = users.find(
+    (u) => u.email === email.trim() && u.senha === senha
+  );
+  if (!user) {
+    setErro("E-mail ou senha inválidos");
+    return;
 
+  }
+  setUsuarioLogado(user);  
+}
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Bem-vindo </Text>

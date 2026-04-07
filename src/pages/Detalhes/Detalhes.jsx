@@ -1,8 +1,8 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import { useState, useContext } from "react";
 import { CartContext } from "../../context/CartContext";
 
-export default function Detalhes({ route }) {
+export default function Detalhes({ route, navigation }) {
   const product = route?.params?.product;
 
   if (!product) {
@@ -64,6 +64,12 @@ export default function Detalhes({ route }) {
           🛒 Adicionar ao carrinho
         </Text>
       </Pressable>
+      <TouchableOpacity
+  style={styles.botaoCheckout}
+  onPress={() => navigation.navigate('Checkout')}
+>
+  <Text style={styles.botaoTexto}>Ir para Checkout</Text>
+</TouchableOpacity>
     </View>
   );
 }
@@ -121,4 +127,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
+  botaoTexto:{
+    marginTop: 40,
+    backgroundColor: "#3498db",
+    padding: 18,
+    borderRadius: 12,
+    color: "#FFF",
+    textAlign: "center",
+    fontWeight: "800",
+  }
 });
