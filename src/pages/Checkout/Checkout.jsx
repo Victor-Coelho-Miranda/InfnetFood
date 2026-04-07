@@ -1,70 +1,68 @@
-import { useState } from "react";
-import {View,Text,StyleSheet,TextInput,TouchableOpacity,ScrollView} from "react-native";
+import { useState, useRef } from "react";
+import {View, Text,StyleSheet,TextInput,TouchableOpacity,ScrollView,Animated,
+} from "react-native";
 
 export default function CheckoutScreen() {
   const pedido = [
     { id: "1", nome: "Hambúrguer", preco: 25 },
-    { id: "2", nome: "Refrigerante", preco: 8 }
+    { id: "2", nome: "Refrigerante", preco: 8 },
   ];
 
   const total = pedido.reduce((sum, item) => sum + item.preco, 0);
 
   const [endereco, setEndereco] = useState("");
   const [pagamento, setPagamento] = useState("");
-  const [erroEndereco, setErroEndereco] = useState("");
-  const [erroPagamento, setErroPagamento] = useState("");
-  const [sucesso, setSucesso] = useState("");
+  const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState(false);
 
-  const validarCampos = () => {
-    let valido = true;
+  const scaleAnim = useRef(new Animated.Value(0)).current;
 
-    if (!endereco.trim()) {
-      setErroEndereco("Endereço obrigatório!");
-      valido = false;
-    } else {
-      setErroEndereco("");
+  function finalizarPedido() {
+    setErro("");
+
+    if (!endereco.trim() || !pagamento) {
+      setErro("Preencha todos os campos obrigatórios!");
+      return;
     }
 
-    if (!pagamento) {
-      setErroPagamento("Selecione uma forma de pagamento!");
-      valido = false;
-    } else {
-      setErroPagamento("");
-    }
+    setSucesso(true);
 
-    return valido;
-  };
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      friction: 5,
+      useNativeDriver: true,
+    }).start();
 
-  const finalizarPedido = () => {
-  if (validarCampos()) {
-    console.log("Pedido finalizado!", { pedido, endereco, pagamento });
-    setSucesso("✅ Pedido realizado com sucesso!");
-    setEndereco("");
-    setPagamento("");
-    setErroEndereco("");
-    setErroPagamento("");
     setTimeout(() => {
-      setSucesso("");
-    }, 3000); 
-  } else {
-    setSucesso(""); 
+      setSucesso(false);
+      scaleAnim.setValue(0);
+      setEndereco("");
+      setPagamento("");
+    }, 3000);
   }
-};
-  const handleEnderecoChange = (text) => {
-    setEndereco(text);
-    setSucesso("");
-  };
 
-  const handlePagamentoChange = (valor) => {
-    setPagamento(valor);
-    setSucesso("");
-  };
+  if (sucesso) {
+    return (
+      <View style={styles.sucessoContainer}>
+        <Animated.View
+          style={{
+            transform: [{ scale: scaleAnim }],
+          }}
+        >
+          <Text style={styles.icone}>✅</Text>
+        </Animated.View>
+
+        <Text style={styles.sucessoTexto}>
+          Pedido realizado com sucesso! 🎉
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>🛒 Revisar Pedido</Text>
 
-      {sucesso ? <Text style={styles.sucesso}>{sucesso}</Text> : null}
       {pedido.map((item) => (
         <View key={item.id} style={styles.item}>
           <Text>{item.nome}</Text>
@@ -73,35 +71,49 @@ export default function CheckoutScreen() {
       ))}
 
       <Text style={styles.total}>Total: R$ {total}</Text>
+
+      {erro ? <Text style={styles.erro}>{erro}</Text> : null}
+
       <Text style={styles.label}>Endereço de entrega *</Text>
       <TextInput
         style={styles.input}
         placeholder="Digite seu endereço"
         value={endereco}
-        onChangeText={handleEnderecoChange}
+        onChangeText={setEndereco}
       />
-      {erroEndereco ? <Text style={styles.erro}>{erroEndereco}</Text> : null}
+
       <Text style={styles.label}>Forma de pagamento *</Text>
+
       <TouchableOpacity
-        style={[styles.option, pagamento === "cartao" && styles.selected]}
-        onPress={() => handlePagamentoChange("cartao")}
+        style={[
+          styles.option,
+          pagamento === "cartao" && styles.selected,
+        ]}
+        onPress={() => setPagamento("cartao")}
       >
         <Text>Cartão 💳</Text>
       </TouchableOpacity>
+
       <TouchableOpacity
-        style={[styles.option, pagamento === "pix" && styles.selected]}
-        onPress={() => handlePagamentoChange("pix")}
+        style={[
+          styles.option,
+          pagamento === "pix" && styles.selected,
+        ]}
+        onPress={() => setPagamento("pix")}
       >
         <Text>Pix ⚡</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.option, pagamento === "dinheiro" && styles.selected]}
-        onPress={() => handlePagamentoChange("dinheiro")}
+        style={[
+          styles.option,
+          pagamento === "dinheiro" && styles.selected,
+        ]}
+        onPress={() => setPagamento("dinheiro")}
       >
         <Text>Dinheiro 💵</Text>
       </TouchableOpacity>
-      {erroPagamento ? <Text style={styles.erro}>{erroPagamento}</Text> : null}
+
       <TouchableOpacity style={styles.botao} onPress={finalizarPedido}>
         <Text style={styles.botaoTexto}>Finalizar Pedido</Text>
       </TouchableOpacity>
@@ -110,46 +122,93 @@ export default function CheckoutScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 15, backgroundColor: "#fff" },
-    title: { fontSize: 22, fontWeight: "bold", marginBottom: 15 },
-    sucesso: {
-    color: "#4CAF50",
+  container: {
+    flex: 1,
+    padding: 15,
+    backgroundColor: "#fff",
+  },
+
+  title: {
+    fontSize: 22,
     fontWeight: "bold",
     marginBottom: 15,
-    fontSize: 16
   },
+
   item: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 8,
     padding: 10,
     backgroundColor: "#f5f5f5",
-    borderRadius: 8
+    borderRadius: 8,
   },
-    total: { fontSize: 18, fontWeight: "bold", marginVertical: 10 },
-    label: { marginTop: 15, fontWeight: "bold" },
-    input: {
+
+  total: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginVertical: 10,
+  },
+
+  erro: {
+    color: "red",
+    marginBottom: 10,
+    fontWeight: "bold",
+  },
+
+  label: {
+    marginTop: 15,
+    fontWeight: "bold",
+  },
+
+  input: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
     padding: 10,
-    marginTop: 5
+    marginTop: 5,
   },
-    option: {
+
+  option: {
     padding: 12,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
-    marginTop: 10
+    marginTop: 10,
   },
-    selected: { backgroundColor: "#d4edda", borderColor: "#4CAF50" },
-    erro: { color: "red", marginTop: 5 },
-    botao: {
+
+  selected: {
+    backgroundColor: "#d4edda",
+    borderColor: "#4CAF50",
+  },
+
+  botao: {
     backgroundColor: "#4CAF50",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginTop: 20
+    marginTop: 20,
   },
-    botaoTexto: { color: "#fff", fontSize: 16, fontWeight: "bold" }
+
+  botaoTexto: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+
+  sucessoContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+
+  icone: {
+    fontSize: 80,
+  },
+
+  sucessoTexto: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 15,
+  },
 });
