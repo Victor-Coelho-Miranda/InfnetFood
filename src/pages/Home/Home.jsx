@@ -3,6 +3,8 @@ import { Categories } from "../../data/Categorias.js";
 import { useContext } from "react";
 import { CartContext } from "../../context/CartContext";
 
+
+
 export default function Home({ navigation }) {
      const { cart } = useContext(CartContext);
 
