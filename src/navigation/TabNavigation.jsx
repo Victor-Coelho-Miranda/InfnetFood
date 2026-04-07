@@ -6,7 +6,7 @@ import Carrinho from "../pages/Carrinho/Carrinho";
 import ProfileScreen from "../pages/Perfil/ProfileScreen";
 import OrdersScreen from "../pages/Pedidos/OrdersScreen";
 import MapaScreens from "../pages/Mapa/MapaScreens";
-
+import Settings from "../pages/Settings/Settings";
 
 const Tab = createBottomTabNavigator();
 
@@ -50,8 +50,16 @@ export function TabsRoutes({ usuario, setUsuarioLogado }) {
       <Tab.Screen name="Carrinho" component={Carrinho} />
       <Tab.Screen name="Pedidos" component={OrdersScreen} />
       <Tab.Screen name="Mapa" component={MapaScreens} />
-
-      <Tab.Screen name="Perfil">
+      <Tab.Screen
+  name="Configuração"
+  component={Settings}
+  options={{
+    tabBarIcon: ({ color, size }) => (
+      <Ionicons name="settings" color={color} size={size} />
+    ),
+  }}
+/>
+<Tab.Screen name="Perfil">
         {(props) => (
           <ProfileScreen
             {...props}
