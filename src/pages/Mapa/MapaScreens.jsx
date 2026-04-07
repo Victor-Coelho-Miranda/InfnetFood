@@ -1,6 +1,6 @@
 import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, Linking } from "react-native";
 
-export default function Restaurantes() {
+export default function Restaurantes({ navigation })  {
   const restaurantes = [
     {
     id: "1",
@@ -67,12 +67,24 @@ export default function Restaurantes() {
       <FlatList
         data={restaurantes}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Image source={{ uri: item.imagem }} style={styles.image} />
-            <Text style={styles.nome}>{item.nome}</Text>
-          </View>
-        )}
+       renderItem={({ item }) => (
+  <TouchableOpacity
+    style={styles.card}
+    onPress={() =>
+      navigation.navigate('Details', {
+        restaurant: {
+          name: item.nome,
+          address: "Centro, Rio de Janeiro",
+          image: item.imagem,
+          menuItem: "Prato especial da casa"
+        }
+      })
+    }
+  >
+    <Image source={{ uri: item.imagem }} style={styles.image} />
+    <Text style={styles.nome}>{item.nome}</Text>
+  </TouchableOpacity>
+)}
       />
       <TouchableOpacity style={styles.botao} onPress={abrirMapa}>
         <Text style={styles.botaoTexto}>Ver no mapa</Text>
